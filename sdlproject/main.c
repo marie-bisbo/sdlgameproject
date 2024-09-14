@@ -140,20 +140,11 @@ int main(int argc, char* args[])
 		if (currentPosition >= 1.f)
 		{
 			printf("Add 1!\n");
-			position.y += 10;
+			position.y += 1;
+			entity->yPosition = position.y;
 			currentPosition = 1 - currentPosition;
 			timeSinceMove = 0;
 		}
-
-		if (SDL_QueryTexture(playerTexture, NULL, NULL, &size.w, &size.h) < 0)
-		{
-			printf("ERROR: %s\n", SDL_GetError());
-		}
-		if (SDL_RenderCopy(app->renderer, playerTexture, NULL, &position) < 0)
-		{
-			printf("ERROR: %s\n", SDL_GetError());
-		}
-		SDL_RenderPresent(app->renderer);
 
 		while (SDL_PollEvent(&event)) 
 		{ 
@@ -188,45 +179,19 @@ int main(int argc, char* args[])
 
 				entity->xPosition = position.x;
 				entity->yPosition = position.y;
-
-				if (SDL_QueryTexture(playerTexture, NULL, NULL, &size.w, &size.h) < 0)
-				{
-					printf("ERROR: %s\n", SDL_GetError());
-				}
-
-				if (SDL_RenderCopy(app->renderer, playerTexture, NULL, &position) < 0)
-				{
-					printf("ERROR: %s\n", SDL_GetError());
-				}
-				SDL_RenderPresent(app->renderer);
-			}
-			else
-			{
-				/*
-				double deltaSeconds = deltaTime * 0.001;
-				timeSinceMove += deltaSeconds;
-				currentPosition = 0.5 * GRAVITY * timeSinceMove * timeSinceMove;
-				printf("Current position: %f\n", currentPosition);
-				if (currentPosition >= 1.f)
-				{
-					printf("Add 1!\n");
-					position.y += 10;
-					currentPosition = 1 - currentPosition;
-					timeSinceMove = 0;
-				}
-
-				if (SDL_QueryTexture(playerTexture, NULL, NULL, &size.w, &size.h) < 0)
-				{
-					printf("ERROR: %s\n", SDL_GetError());
-				}
-				if (SDL_RenderCopy(app->renderer, playerTexture, NULL, &position) < 0)
-				{
-					printf("ERROR: %s\n", SDL_GetError());
-				}
-				SDL_RenderPresent(app->renderer);
-				*/
 			}
 		} 
+
+		if (SDL_QueryTexture(playerTexture, NULL, NULL, &size.w, &size.h) < 0)
+		{
+			printf("ERROR: %s\n", SDL_GetError());
+		}
+		if (SDL_RenderCopy(app->renderer, playerTexture, NULL, &position) < 0)
+		{
+			printf("ERROR: %s\n", SDL_GetError());
+		}
+		SDL_RenderPresent(app->renderer);
+
 	}
 
 	SDL_DestroyWindow(app->window);
