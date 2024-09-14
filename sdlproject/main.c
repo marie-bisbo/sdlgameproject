@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
+#define GRAVITY 10
 
 typedef struct _Entity
 {
@@ -76,6 +77,9 @@ App* InitApp()
 
 int main(int argc, char* args[])
 {
+	int timeSinceStart = 0;
+	int deltaTime = 0;
+
 	App* app = InitApp();
 	if (NULL == app)
 	{
@@ -114,14 +118,42 @@ int main(int argc, char* args[])
 	SDL_Event event;
 	bool quit = false;
 
+	double currentPosition = 0.f;
+	double timeSinceMove = 0.f;
+
 	while (false == quit)
 	{
+		deltaTime = SDL_GetTicks64() - timeSinceStart;
+		timeSinceStart = SDL_GetTicks64();
+
 		SDL_SetRenderDrawColor(app->renderer, 0, 204, 0, 255);
 		SDL_RenderClear(app->renderer);
 
 		SDL_Rect size;
 		size.w = 64;
 		size.h = 64;
+
+		double deltaSeconds = deltaTime * 0.001;
+		timeSinceMove += deltaSeconds;
+		currentPosition = 0.5 * GRAVITY * timeSinceMove * timeSinceMove;
+		printf("Current position: %f\n", currentPosition);
+		if (currentPosition >= 1.f)
+		{
+			printf("Add 1!\n");
+			position.y += 10;
+			currentPosition = 1 - currentPosition;
+			timeSinceMove = 0;
+		}
+
+		if (SDL_QueryTexture(playerTexture, NULL, NULL, &size.w, &size.h) < 0)
+		{
+			printf("ERROR: %s\n", SDL_GetError());
+		}
+		if (SDL_RenderCopy(app->renderer, playerTexture, NULL, &position) < 0)
+		{
+			printf("ERROR: %s\n", SDL_GetError());
+		}
+		SDL_RenderPresent(app->renderer);
 
 		while (SDL_PollEvent(&event)) 
 		{ 
@@ -170,6 +202,19 @@ int main(int argc, char* args[])
 			}
 			else
 			{
+				/*
+				double deltaSeconds = deltaTime * 0.001;
+				timeSinceMove += deltaSeconds;
+				currentPosition = 0.5 * GRAVITY * timeSinceMove * timeSinceMove;
+				printf("Current position: %f\n", currentPosition);
+				if (currentPosition >= 1.f)
+				{
+					printf("Add 1!\n");
+					position.y += 10;
+					currentPosition = 1 - currentPosition;
+					timeSinceMove = 0;
+				}
+
 				if (SDL_QueryTexture(playerTexture, NULL, NULL, &size.w, &size.h) < 0)
 				{
 					printf("ERROR: %s\n", SDL_GetError());
@@ -179,6 +224,7 @@ int main(int argc, char* args[])
 					printf("ERROR: %s\n", SDL_GetError());
 				}
 				SDL_RenderPresent(app->renderer);
+				*/
 			}
 		} 
 		
