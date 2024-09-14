@@ -227,8 +227,6 @@ int main(int argc, char* args[])
 				*/
 			}
 		} 
-		
-		SDL_Delay(16);
 	}
 
 	SDL_DestroyWindow(app->window);
