@@ -120,6 +120,7 @@ int main(int argc, char* args[])
 
 	double currentPosition = 0.f;
 	double timeSinceMove = 0.f;
+	double currentVelocity = 0.f;
 
 	while (false == quit)
 	{
@@ -135,7 +136,8 @@ int main(int argc, char* args[])
 
 		double deltaSeconds = deltaTime * 0.001;
 		timeSinceMove += deltaSeconds;
-		currentPosition = 0.5 * GRAVITY * timeSinceMove * timeSinceMove;
+		currentVelocity += GRAVITY * timeSinceMove;
+		currentPosition = (currentVelocity * timeSinceMove) + (0.5 * GRAVITY * timeSinceMove * timeSinceMove);
 		printf("Current position: %f\n", currentPosition);
 		if (currentPosition >= 1.f)
 		{
