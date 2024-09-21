@@ -2,10 +2,8 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
-
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
-#define GRAVITY 10
+#include "constants.h"
+#include "maths.h"
 
 typedef struct _Entity
 {
@@ -118,6 +116,8 @@ int main(int argc, char* args[])
 	SDL_Event event;
 	bool quit = false;
 
+	bool jumping = false;
+
 	double currentPosition = 0.f;
 	double timeSinceMove = 0.f;
 	double currentVelocity = 0.f;
@@ -137,15 +137,32 @@ int main(int argc, char* args[])
 		double deltaSeconds = deltaTime * 0.001;
 		timeSinceMove += deltaSeconds;
 		currentVelocity += GRAVITY * timeSinceMove;
+		printf("Current velocity: %f\n", currentVelocity);
 		currentPosition = (currentVelocity * timeSinceMove) + (0.5 * GRAVITY * timeSinceMove * timeSinceMove);
-		printf("Current position: %f\n", currentPosition);
-		if (currentPosition >= 1.f)
+		// printf("Current position: %d\n", entity->yPosition);
+		if (Absolute(currentPosition) >= 1.f && entity->yPosition < 600)
 		{
-			printf("Add 1!\n");
-			position.y += 1;
+			position.y += currentVelocity > 0 ? 1 : -1;
 			entity->yPosition = position.y;
-			currentPosition = 1 - currentPosition;
+			// Carry over fractional component 
+			currentPosition = currentPosition - 1;
 			timeSinceMove = 0;
+		}
+		else if (entity->yPosition >= 600)
+		{
+			deltaSeconds = 0;
+			timeSinceMove = 0;
+			currentVelocity = 0;
+			currentPosition = 0;
+			// jumping = false;
+		}
+		if (jumping)
+		{
+			printf("JUMPING\n");
+			position.y -= 1;
+			entity->yPosition = position.y;
+			currentVelocity = JUMP_VELOCITY;
+			jumping = false;
 		}
 
 		while (SDL_PollEvent(&event)) 
@@ -173,6 +190,10 @@ int main(int argc, char* args[])
 				case SDLK_RIGHT:
 					printf("RIGHT\n");
 					position.x += 5;
+					break;
+				case SDLK_SPACE:
+					printf("SPACE\n");
+					jumping = true;
 					break;
 				default:
 					printf("You pressed a different key\n");
