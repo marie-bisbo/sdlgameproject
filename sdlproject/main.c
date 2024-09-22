@@ -9,6 +9,8 @@ typedef struct _Entity
 {
 	int xPosition;
 	int yPosition;
+	int width;
+	int height;
 	SDL_Texture* texture;
 } Entity;
 
@@ -77,6 +79,7 @@ int main(int argc, char* args[])
 {
 	int timeSinceStart = 0;
 	int deltaTime = 0;
+	int requiredDeltaTime = 1000 / MAX_FRAMERATE;
 
 	App* app = InitApp();
 	if (NULL == app)
@@ -109,9 +112,11 @@ int main(int argc, char* args[])
 
 	entity->xPosition = 100;
 	entity->yPosition = 100;
+	entity->width = 64;
+	entity->height = 64;
 	entity->texture = playerTexture;
 
-	SDL_Rect position = {entity->xPosition, entity->yPosition, 64, 64};
+	SDL_Rect position = {entity->xPosition, entity->yPosition, entity->width, entity->height};
 
 	SDL_Event event;
 	bool quit = false;
@@ -127,6 +132,16 @@ int main(int argc, char* args[])
 		deltaTime = SDL_GetTicks64() - timeSinceStart;
 		timeSinceStart = SDL_GetTicks64();
 
+		/* Why is this not working!? !? !? !
+		if (deltaTime < requiredDeltaTime)
+		{
+			SDL_Delay(requiredDeltaTime - deltaTime);
+			deltaTime = requiredDeltaTime;
+			printf("Delta time: %d\n", deltaTime);
+			printf("Time since start: %d\n", timeSinceStart);
+		}
+		*/
+
 		SDL_SetRenderDrawColor(app->renderer, 0, 204, 0, 255);
 		SDL_RenderClear(app->renderer);
 
@@ -137,15 +152,15 @@ int main(int argc, char* args[])
 		double deltaSeconds = deltaTime * 0.001;
 		timeSinceMove += deltaSeconds;
 		currentVelocity += GRAVITY * timeSinceMove;
-		printf("Current velocity: %f\n", currentVelocity);
 		currentPosition = (currentVelocity * timeSinceMove) + (0.5 * GRAVITY * timeSinceMove * timeSinceMove);
-		// printf("Current position: %d\n", entity->yPosition);
 		if (Absolute(currentPosition) >= 1.f && entity->yPosition < 600)
 		{
-			position.y += currentVelocity > 0 ? 1 : -1;
+			int amountToMove = (int)currentPosition;
+			printf("Amount to move: %d\n", amountToMove);
+			position.y += amountToMove;
 			entity->yPosition = position.y;
 			// Carry over fractional component 
-			currentPosition = currentPosition - 1;
+			currentPosition = currentPosition - amountToMove;
 			timeSinceMove = 0;
 		}
 		else if (entity->yPosition >= 600)
@@ -154,14 +169,12 @@ int main(int argc, char* args[])
 			timeSinceMove = 0;
 			currentVelocity = 0;
 			currentPosition = 0;
-			// jumping = false;
 		}
 		if (jumping)
 		{
-			printf("JUMPING\n");
 			position.y -= 1;
 			entity->yPosition = position.y;
-			currentVelocity = JUMP_VELOCITY;
+			currentVelocity += JUMP_VELOCITY;
 			jumping = false;
 		}
 
@@ -214,7 +227,6 @@ int main(int argc, char* args[])
 			printf("ERROR: %s\n", SDL_GetError());
 		}
 		SDL_RenderPresent(app->renderer);
-
 	}
 
 	SDL_DestroyWindow(app->window);
