@@ -2,7 +2,6 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <math.h>
 #include "constants.h"
 #include "maths.h"
 #include "app.h"
@@ -60,10 +59,13 @@ int main(int argc, char* args[])
 	size.w = 64;
 	size.h = 64;
 
+	bool movingUp = false;
+
 	while (false == quit)
 	{
 		deltaTime = SDL_GetTicks64() - timeSinceStart;
 		timeSinceStart = SDL_GetTicks64();
+		double deltaSeconds = deltaTime * 0.001;
 
 		while (SDL_PollEvent(&event))
 		{
@@ -77,11 +79,11 @@ int main(int argc, char* args[])
 				{
 				case SDLK_UP:
 					printf("UP\n");
-					position.y -= 5;
+					// currentVelocity += JUMP_VELOCITY * deltaSeconds;
+					movingUp = true;
 					break;
 				case SDLK_DOWN:
 					printf("DOWN\n");
-					position.y += 5;
 					break;
 				case SDLK_LEFT:
 					printf("LEFT\n");
@@ -98,28 +100,37 @@ int main(int argc, char* args[])
 					printf("You pressed a different key\n");
 					break;
 				}
-
-				entity->xPosition = position.x;
-				entity->yPosition = position.y;
+			}
+			else if (event.type == SDL_KEYUP)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_UP:
+					movingUp = false;
+					printf("UP Released\n");
+					break;
+				}
 			}
 		}
 
 		SDL_SetRenderDrawColor(app->renderer, 0, 204, 0, 255);
 		SDL_RenderClear(app->renderer);
 
-		double deltaSeconds = deltaTime * 0.001;
+		// printf("Current velocity: %f\n", currentVelocity);
+
+		if (movingUp)
+		{
+			currentVelocity += VELOCITY * deltaSeconds;
+		}
+
 		currentVelocity += GRAVITY * deltaSeconds;
 		currentPosition += currentVelocity * deltaSeconds;
-		if (entity->yPosition < 600)
+		if (Absolute(currentPosition) >= 1)
 		{
-			position.y += round(currentPosition);
+			int toMove = currentPosition > 0 ? 1 : -1;
+			position.y += toMove;
 			entity->yPosition = position.y;
-		}
-		else if (entity->yPosition >= 600)
-		{
-			deltaSeconds = 0;
-			currentVelocity = 0;
-			currentPosition = 0;
+			currentPosition -= toMove;
 		}
 
 		if (SDL_QueryTexture(playerTexture, NULL, NULL, &size.w, &size.h) < 0)
