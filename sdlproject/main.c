@@ -8,13 +8,10 @@
 #include "app.h"
 #include "entity.h"
 
-#define SDL_HINT_RENDER_VSYNC 1
-
 int main(int argc, char* args[])
 {
 	int timeSinceStart = 0;
 	int deltaTime = 0;
-	int requiredDeltaTime = 1000 / MAX_FRAMERATE;
 
 	App* app = InitApp();
 	if (NULL == app)
