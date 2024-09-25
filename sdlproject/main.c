@@ -63,8 +63,6 @@ int main(int argc, char* args[])
 	size.w = 64;
 	size.h = 64;
 
-	bool jumping = true;
-
 	while (false == quit)
 	{
 		deltaTime = SDL_GetTicks64() - timeSinceStart;
@@ -98,8 +96,6 @@ int main(int argc, char* args[])
 					break;
 				case SDLK_SPACE:
 					printf("SPACE\n");
-					// position.y -= 1;
-					// currentVelocity += JUMP_VELOCITY;
 					break;
 				default:
 					printf("You pressed a different key\n");
@@ -116,17 +112,11 @@ int main(int argc, char* args[])
 
 		double deltaSeconds = deltaTime * 0.001;
 		currentVelocity += GRAVITY * deltaSeconds;
-		// currentPosition += (currentVelocity * deltaSeconds) + (0.5 * GRAVITY * deltaSeconds * deltaSeconds);
 		currentPosition += currentVelocity * deltaSeconds;
-		// if ((Absolute(currentPosition) >= 1.f && entity->yPosition < 600))
 		if (entity->yPosition < 600)
 		{
-			// int amountToMove = (int)currentPosition;
 			position.y += round(currentPosition);
-			printf("Position: %d\n", position.y);
-			// position.y += amountToMove;
 			entity->yPosition = position.y;
-			// currentPosition -= amountToMove;
 		}
 		else if (entity->yPosition >= 600)
 		{
