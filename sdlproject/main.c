@@ -45,9 +45,10 @@ int main(int argc, char* args[])
 	entity->yPosition = 100;
 	entity->width = 64;
 	entity->height = 64;
-	entity->texture = playerTexture;
-
 	SDL_Rect position = { entity->xPosition, entity->yPosition, entity->width, entity->height };
+	entity->texture = playerTexture;
+	entity->collider = position;
+
 
 	SDL_Event event;
 	bool quit = false;
@@ -58,6 +59,12 @@ int main(int argc, char* args[])
 	SDL_Rect size;
 	size.w = 64;
 	size.h = 64;
+
+	SDL_Rect floor;
+	floor.x = 100;
+	floor.y = 600;
+	floor.h = 50;
+	floor.w = 300;
 
 	bool movingUp = false;
 
@@ -113,8 +120,13 @@ int main(int argc, char* args[])
 			}
 		}
 
-		SDL_SetRenderDrawColor(app->renderer, 0, 204, 0, 255);
 		SDL_RenderClear(app->renderer);
+		// SDL_SetRenderDrawColor(app->renderer, 0, 204, 0, 255);
+		SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, 255);
+		SDL_RenderDrawRect(app->renderer, &floor);
+
+		// Draw floor
+		SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, 255);
 
 		// printf("Current velocity: %f\n", currentVelocity);
 
@@ -125,13 +137,15 @@ int main(int argc, char* args[])
 
 		currentVelocity += GRAVITY * deltaSeconds;
 		currentPosition += currentVelocity * deltaSeconds;
-		if (Absolute(currentPosition) >= 1)
+		if (Absolute(currentPosition) >= 1 && !Colliding(&entity->collider, &floor))
 		{
 			int toMove = currentPosition > 0 ? 1 : -1;
 			position.y += toMove;
 			entity->yPosition = position.y;
 			currentPosition -= toMove;
+			entity->collider = position;
 		}
+
 
 		if (SDL_QueryTexture(playerTexture, NULL, NULL, &size.w, &size.h) < 0)
 		{
