@@ -120,7 +120,7 @@ int main(int argc, char* args[])
 
 		if (movingUp)
 		{
-			currentVelocity += VELOCITY * deltaSeconds;
+			currentVelocity += THRUST * deltaSeconds;
 		}
 
 		currentVelocity += GRAVITY * deltaSeconds;

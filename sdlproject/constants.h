@@ -2,5 +2,5 @@
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
-#define GRAVITY 10
-#define VELOCITY -20
+#define GRAVITY 20
+#define THRUST -50
