@@ -86,7 +86,6 @@ int main(int argc, char* args[])
 				{
 				case SDLK_UP:
 					printf("UP\n");
-					// currentVelocity += JUMP_VELOCITY * deltaSeconds;
 					movingUp = true;
 					break;
 				case SDLK_DOWN:
@@ -121,14 +120,11 @@ int main(int argc, char* args[])
 		}
 
 		SDL_RenderClear(app->renderer);
-		// SDL_SetRenderDrawColor(app->renderer, 0, 204, 0, 255);
 		SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, 255);
 		SDL_RenderDrawRect(app->renderer, &floor);
 
 		// Draw floor
 		SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, 255);
-
-		// printf("Current velocity: %f\n", currentVelocity);
 
 		if (movingUp)
 		{
@@ -161,6 +157,6 @@ int main(int argc, char* args[])
 	SDL_DestroyWindow(app->window);
 
 	SDL_Quit();
-
+	
 	return 0;
 }
